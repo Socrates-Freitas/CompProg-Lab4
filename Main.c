@@ -9,14 +9,13 @@
 #include <string.h>
 #include <assert.h>
 #include "Parser.h"
-
+#include "Builtin.h"
 #define MAX_INPUT_SIZE 150
 
 
 void printShell();
 void commandRunner();
-int handleBuiltIn(char *comando);
-
+int handleBuiltIn(char** argv);
 
 int main(int argc, char **argv){
     while(1){
@@ -54,7 +53,7 @@ void commandRunner(){
    // int pid = fork(); // cria novo processo
     argv = criarArgv(entrada,&numeroDeElementos);
     if(argv){
-        builtInType = handleBuiltIn(argv[0]);
+        builtInType = handleBuiltIn(argv);
         if(builtInType == -1){
             pid = fork();
             if(pid == 0){
@@ -92,40 +91,38 @@ void commandRunner(){
 
 }
 
-int handleBuiltIn(char *comando){
-    if(strcmp(comando,"fg") == 0){
+int handleBuiltIn(char** argv){
+    if(strcmp(argv[0],"fg") == 0){
         printf("fg...\n");
         return 0;
     }
-    else if(strcmp(comando,"bg") == 0 ){
+    else if(strcmp(argv[0],"bg") == 0 ){
         printf("bg...\n");
         return 0;
     }
-    else if(strcmp(comando,"jobs") == 0 ){
+    else if(strcmp(argv[0],"jobs") == 0 ){
         printf("jobs...\n");
         return 0;
     }
-    else if(strcmp(comando,"cd") == 0){
-        printf("cd...\n");
+    else if(strcmp(argv[0],"cd") == 0){
+        builtIn_cd(argv[1]);
         return 0;
     }
-    else if(strcmp(comando,"quit") == 0){
+    else if(strcmp(argv[0],"quit") == 0){
         exit(0);
     }
-    else if(strcmp(comando,"help") == 0){
+    else if(strcmp(argv[0],"help") == 0){
 	    puts("\nList of Commands supported:"
 	        "cd - Change the current working directory"
             "fg - Bring a background process to the foreground"
             "quit - This will quit the shell"
 	        "bg - Runs jobs in the background"
 	        "jobs... - Show the active jobs in shell");
+        return 0;
+    }
     
     return -1;
     
 }
 
-void rodarComando(char **argv){
-    //char *local = strcat("/bin/",comando);
-    execve(argv[0],argv,NULL);
-}
 
