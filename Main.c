@@ -112,6 +112,13 @@ int handleBuiltIn(char *comando){
     else if(strcmp(comando,"quit") == 0){
         exit(0);
     }
+    else if(strcmp(comando,"help") == 0){
+	    puts("\nList of Commands supported:"
+	        "cd - Change the current working directory"
+            "fg - Bring a background process to the foreground"
+            "quit - This will quit the shell"
+	        "bg - Runs jobs in the background"
+	        "jobs... - Show the active jobs in shell");
     
     return -1;
     
