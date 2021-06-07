@@ -50,19 +50,15 @@ void commandRunner(){
         exit(1);
     }
 
-   // int pid = fork(); // cria novo processo
     argv = criarArgv(entrada,&numeroDeElementos);
     if(argv){
         builtInType = handleBuiltIn(argv);
-        if(builtInType == -1){
+        if(builtInType == -1){ // se não for built in
             pid = fork();
             if(pid == 0){
                 // Aqui subtrai por 2 porque o último(numeroDeElementos) elemento é NULL
                 isBackground = isBackgroundProcess(argv[numeroDeElementos - 2]); 
 
-                // for(int i =0; *(argv + i);i++){
-                //     printf("-> %s\n",argv[i]);
-                // }
                 if(isBackground != 0){
                    // printf("é sim\n");
                 }
@@ -87,8 +83,6 @@ void commandRunner(){
     }
 
 
-    return;
-
 }
 
 int handleBuiltIn(char** argv){
@@ -108,16 +102,16 @@ int handleBuiltIn(char** argv){
         builtIn_cd(argv[1]);
         return 0;
     }
-    else if(strcmp(argv[0],"quit") == 0){
+    else if(strcmp(argv[0],"exit") == 0){
         exit(0);
     }
     else if(strcmp(argv[0],"help") == 0){
-	    puts("\nList of Commands supported:"
-	        "cd - Change the current working directory"
-            "fg - Bring a background process to the foreground"
-            "quit - This will quit the shell"
-	        "bg - Runs jobs in the background"
-	        "jobs... - Show the active jobs in shell");
+	    puts("Lista de comandos suportados:\n"
+	        "cd - Mudar o diretório atual\n"
+            "fg - Trazer processo em background para foreground\n"
+            "exit - Este comando irá terminar a shell\n"
+	        "bg - Executa programas em background\n"
+	        "jobs - Exibe os programas ativos na shell");
         return 0;
     }
     
