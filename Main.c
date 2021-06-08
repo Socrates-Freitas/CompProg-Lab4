@@ -47,7 +47,7 @@ void commandRunner(){
 
     printShell();
     fgets(entrada,MAX_INPUT_SIZE,stdin);
-    if(entrada[0] == '\n'){// se entrada estiver vazia
+    if(entrada[0] == '\n' || entrada[0] == ' ' || entrada[0] == '\t'){// se entrada estiver vazia
         return; // sai da função e vai pra proxima iteração do loop
     } 
 

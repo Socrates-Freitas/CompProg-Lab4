@@ -69,7 +69,9 @@ char  **criarArgv(char *comando, int *recebedorQuantidade){
 */
 void removerNewLineDaString(char *texto){
     int tamanhoDoTexto = strlen(texto);
-    texto[tamanhoDoTexto -1] = '\0';
+    if(tamanhoDoTexto > 1){ // se a string não estiver vazia
+        texto[tamanhoDoTexto -1] = '\0';
+    }
 }
 
 /*
