@@ -8,17 +8,19 @@
 #include <unistd.h>
 #include <string.h>
 #include <assert.h>
+#include "Main.h"
 #include "Parser.h"
 #include "Builtin.h"
+
+
 #define MAX_INPUT_SIZE 150
+#define NUMERO_ATE_ULTIMO_ITEM_ARGV 2  
 
 
-void printShell();
-void commandRunner();
-int handleBuiltIn(char** argv);
 
 int main(int argc, char **argv){
     while(1){
+        signal(SIGINT,SIG_IGN);
         commandRunner();
     }
     return 0;
@@ -45,9 +47,14 @@ void commandRunner(){
 
     printShell();
     fgets(entrada,MAX_INPUT_SIZE,stdin);
+    if(entrada[0] == '\n'){// se entrada estiver vazia
+        return; // sai da função e vai pra proxima iteração do loop
+    } 
+
     removerNewLineDaString(entrada); // retira o \n no final da string de entrada
-    if(feof(stdin)){
-        exit(1);
+    if(feof(stdin)){ // Ctr + D
+        printf("\n");
+        exit(0);
     }
 
     argv = criarArgv(entrada,&numeroDeElementos);
@@ -56,11 +63,13 @@ void commandRunner(){
         if(builtInType == -1){ // se não for built in
             pid = fork();
             if(pid == 0){
+                signal(SIGINT,SIG_DFL);
+                int falhaExecucao; // Indicará se a execução de execve falhou
                 // Aqui subtrai por 2 porque o último(numeroDeElementos) elemento é NULL
-                isBackground = isBackgroundProcess(argv[numeroDeElementos - 2]); 
+                isBackground = isBackgroundProcess(argv[numeroDeElementos - NUMERO_ATE_ULTIMO_ITEM_ARGV]); 
 
                 if(isBackground != 0){
-                   // printf("é sim\n");
+                // printf("é sim\n");
                 }
                 else{
                     //printf("num e nao\n");
@@ -68,7 +77,10 @@ void commandRunner(){
 
                 criarTextoDoComando(comandoConcatenado,binFolder,argv[0]);
 
-                execve(comandoConcatenado,argv,__environ);
+                falhaExecucao = execve(comandoConcatenado,argv,__environ);
+                if(falhaExecucao != 0){ // se houve falha na execução de um comando pelo execve...
+                    fprintf(stderr,"Comando inválido\n");
+                }
                 exit(0);
             }
             else{
@@ -103,6 +115,9 @@ int handleBuiltIn(char** argv){
         return 0;
     }
     else if(strcmp(argv[0],"exit") == 0){
+        exit(0);
+    }
+    else if(strcmp(argv[0],"^C") == 0){
         exit(0);
     }
     else if(strcmp(argv[0],"help") == 0){
